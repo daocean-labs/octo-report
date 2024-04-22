@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/csv"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io"
 	"log"
@@ -38,13 +39,37 @@ type Swaps struct {
 func main() {
 	var err error
 
-	address := "0x201e9f6025012c6fa6d6171432eed37c57fe5cfd"
-	swaps := getSwapHistory(address)
+	address := flag.String("address", "", "Address of the Wallet. E.g. 0x0123456789012345678901234567890123456789")
+	name := flag.String("name", "", "name of the files. E.g. johndoe")
+	typeNum := flag.Int("type", 0, "Type of Report: 1 (Swap History), 2 (Transaction History)")
 
-	createCsv(swaps)
+	flag.Parse()
+
+	fmt.Printf("Adresse: %s, Name: %s, Typ: %d\n", *address, *name, *typeNum)
+
+	// Sanity check
+	if len(*address) != 42 {
+		log.Fatal("Wrong address length. use 42 byte")
+	}
+
+	currentTime := time.Now()
+	dateString := currentTime.Format("2006-01-02")
+
+	filenameCsv := fmt.Sprintf("%s_%s.csv", dateString, *name)
+	filenamePdf := fmt.Sprintf("%s_%s.pdf", dateString, *name)
+
+	var swaps Swaps
+
+	switch *typeNum {
+	case 1:
+		swaps = getSwapHistory(*address)
+
+	}
+
+	createCsv(swaps, filenameCsv)
 
 	// First, we load the CSV data.
-	data := loadCSV("testcsv.csv")
+	data := loadCSV(filenameCsv)
 
 	// Then we create a new PDF document and write the title and the current date.
 	pdf := newReport()
@@ -61,14 +86,14 @@ func main() {
 	}
 
 	// And finally, we write out our finished record to a file.
-	err = savePDF(pdf)
+	err = savePDF(pdf, filenamePdf)
 	if err != nil {
 		log.Fatalf("Cannot save PDF: %s|n", err)
 	}
 }
 
-func createCsv(swaps Swaps) {
-	file, err := os.Create("testcsv.csv")
+func createCsv(swaps Swaps, filenameCsv string) {
+	file, err := os.Create(filenameCsv)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -253,8 +278,8 @@ func image(pdf *gofpdf.Fpdf) *gofpdf.Fpdf {
 //
 // Finally, the convenience method `OutputFileAndClose()` lets us save the
 // finished document.
-func savePDF(pdf *gofpdf.Fpdf) error {
-	return pdf.OutputFileAndClose("report.pdf")
+func savePDF(pdf *gofpdf.Fpdf, filenamePdf string) error {
+	return pdf.OutputFileAndClose(filenamePdf)
 }
 
 func roundToDigits(input float64, significantDigits int) float64 {
