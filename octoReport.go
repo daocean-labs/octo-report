@@ -1,9 +1,8 @@
-package main
+package octoReport
 
 import (
 	"encoding/csv"
 	"encoding/json"
-	"flag"
 	"fmt"
 	"io"
 	"log"
@@ -36,35 +35,39 @@ type Swaps struct {
 	Swaps []Swap `json:"swaps"`
 }
 
-func main() {
-	var err error
-
-	address := flag.String("address", "", "Address of the Wallet. E.g. 0x0123456789012345678901234567890123456789")
-	name := flag.String("name", "", "name of the files. E.g. johndoe")
-	typeNum := flag.Int("type", 0, "Type of Report: 1 (Swap History), 2 (Transaction History)")
-
-	flag.Parse()
-
-	fmt.Printf("Adresse: %s, Name: %s, Typ: %d\n", *address, *name, *typeNum)
-
+// Public Package Function to create Swap History
+func CreateSwapHistory(address string, name string, timestampFrom int64, timestampTo int64) {
 	// Sanity check
-	if len(*address) != 42 {
+	if len(address) != 42 {
 		log.Fatal("Wrong address length. use 42 byte")
+		return
 	}
+
+	timeFrom := time.Unix(timestampFrom, 0)
+
+	var timeTo time.Time
+
+	if 0 == timestampTo {
+		timeTo = time.Now()
+	} else {
+		timeTo = time.Unix(timestampTo, 0)
+	}
+
+	fmt.Printf("Creating Swap history. address: %s, name: %s, from: %s, to: %s",
+		address,
+		name,
+		timeFrom.Format("2006-01-02"),
+		timeTo.Format("2006-01-02"))
+
+	var err error
 
 	currentTime := time.Now()
 	dateString := currentTime.Format("2006-01-02")
 
-	filenameCsv := fmt.Sprintf("%s_%s.csv", dateString, *name)
-	filenamePdf := fmt.Sprintf("%s_%s.pdf", dateString, *name)
+	filenameCsv := fmt.Sprintf("%s_%s.csv", dateString, name)
+	filenamePdf := fmt.Sprintf("%s_%s.pdf", dateString, name)
 
 	var swaps Swaps
-
-	switch *typeNum {
-	case 1:
-		swaps = getSwapHistory(*address)
-
-	}
 
 	createCsv(swaps, filenameCsv)
 
@@ -90,6 +93,11 @@ func main() {
 	if err != nil {
 		log.Fatalf("Cannot save PDF: %s|n", err)
 	}
+}
+
+// Public Package Function to create Transaction History
+func CreateTransactionHistory(address string, name string, timestampFrom int, timestampTo int) {
+	// TODO
 }
 
 func createCsv(swaps Swaps, filenameCsv string) {
