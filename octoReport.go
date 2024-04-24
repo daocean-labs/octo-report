@@ -64,8 +64,8 @@ func CreateSwapHistory(address string, name string, timestampFrom int64, timesta
 	currentTime := time.Now()
 	dateString := currentTime.Format("2006-01-02")
 
-	filenameCsv := fmt.Sprintf("out/swaps/%s_%s.csv", dateString, name)
-	filenamePdf := fmt.Sprintf("out/swaps/%s_%s.pdf", dateString, name)
+	filenameCsv := fmt.Sprintf("reports/swap/%s_%s.csv", dateString, name)
+	filenamePdf := fmt.Sprintf("reports/swap/%s_%s.pdf", dateString, name)
 
 	swaps := getSwapHistory(address)
 
