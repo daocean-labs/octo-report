@@ -53,7 +53,7 @@ func CreateSwapHistory(address string, name string, timestampFrom int64, timesta
 		timeTo = time.Unix(timestampTo, 0)
 	}
 
-	fmt.Printf("Creating Swap history. address: %s, name: %s, from: %s, to: %s",
+	fmt.Printf("Creating Swap history. address: %s, name: %s, from: %s, to: %s\n",
 		address,
 		name,
 		timeFrom.Format("2006-01-02"),
@@ -64,8 +64,8 @@ func CreateSwapHistory(address string, name string, timestampFrom int64, timesta
 	currentTime := time.Now()
 	dateString := currentTime.Format("2006-01-02")
 
-	filenameCsv := fmt.Sprintf("%s_%s.csv", dateString, name)
-	filenamePdf := fmt.Sprintf("%s_%s.pdf", dateString, name)
+	filenameCsv := fmt.Sprintf("out/swaps/%s_%s.csv", dateString, name)
+	filenamePdf := fmt.Sprintf("out/swaps/%s_%s.pdf", dateString, name)
 
 	swaps := getSwapHistory(address)
 
@@ -141,8 +141,6 @@ func createCsv(swaps Swaps, filenameCsv string) {
 }
 
 func getSwapHistory(address string) (swaps Swaps) {
-	fmt.Println("getSwapHistory")
-
 	resp, err := http.Get("https://api.octodefi.dev/trades/history?wallet=" + address) // replace with your URL
 	if err != nil {
 		fmt.Println(err)
