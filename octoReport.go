@@ -278,7 +278,7 @@ func table(pdf *gofpdf.Fpdf, tbl [][]string) *gofpdf.Fpdf {
 func image(pdf *gofpdf.Fpdf) *gofpdf.Fpdf {
 	// The `ImageOptions` method takes a file path, x, y, width, and height
 	// parameters, and an `ImageOptions` struct to specify a couple of options.
-	pdf.ImageOptions("octodefi_logo.png", 220, 10, 27, 22, false, gofpdf.ImageOptions{ImageType: "PNG", ReadDpi: true}, 0, "")
+	pdf.ImageOptions("assets/octodefi_logo.png", 220, 10, 27, 22, false, gofpdf.ImageOptions{ImageType: "PNG", ReadDpi: true}, 0, "")
 	return pdf
 }
 
