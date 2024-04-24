@@ -141,6 +141,8 @@ func createCsv(swaps Swaps, filenameCsv string) {
 }
 
 func getSwapHistory(address string) (swaps Swaps) {
+	fmt.Println("getSwapHistory")
+
 	resp, err := http.Get("https://api.octodefi.dev/trades/history?wallet=" + address) // replace with your URL
 	if err != nil {
 		fmt.Println(err)
